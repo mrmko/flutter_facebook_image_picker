@@ -7,13 +7,9 @@ class PhotoGrid extends StatefulWidget {
   final List<Photo> _selectedPhotos;
   final Function(Photo) onPhotoTap;
   final Function onLoadMore;
+  final Icon selectedIcon;
 
-  PhotoGrid(
-    this._photos,
-    this._selectedPhotos, {
-    @required this.onPhotoTap,
-    @required this.onLoadMore,
-  });
+  PhotoGrid(this._photos, this._selectedPhotos, {@required this.onPhotoTap, @required this.onLoadMore, @required this.selectedIcon});
 
   @override
   PhotoGridState createState() {
@@ -75,10 +71,7 @@ class PhotoGridState extends State<PhotoGrid> {
               ? Positioned(
                   bottom: 5.00,
                   right: 5.00,
-                  child: Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                  ),
+                  child: widget.selectedIcon,
                 )
               : null,
         ].where((o) => o != null).toList(),

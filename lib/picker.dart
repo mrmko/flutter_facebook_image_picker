@@ -25,26 +25,31 @@ class FacebookImagePicker extends StatefulWidget {
   final String cancelBtnText;
   final TextStyle cancelBtnTextStyle;
   final Function onCancel;
+  final bool multiImageSelect;
+  final Icon selectedIcon;
 
-  FacebookImagePicker(
-    this._accessToken, {
-    this.appBarTitle = 'Facebook Image Picker',
-    this.appBarTextStyle,
-    this.appBarColor,
-    this.doneBtnText = 'Done',
-    this.doneBtnTextStyle,
-    @required this.onDone,
-    this.cancelBtnText = 'Cancel',
-    this.cancelBtnTextStyle,
-    @required this.onCancel,
-  }) : assert(_accessToken != null);
+  FacebookImagePicker(this._accessToken,
+      {this.appBarTitle = 'Facebook Image Picker',
+      this.appBarTextStyle,
+      this.appBarColor,
+      this.doneBtnText = 'Done',
+      this.doneBtnTextStyle,
+      @required this.onDone,
+      this.cancelBtnText = 'Cancel',
+      this.cancelBtnTextStyle,
+      @required this.onCancel,
+      this.multiImageSelect = true,
+      this.selectedIcon = const Icon(
+        Icons.check_circle,
+        color: Colors.green,
+      )})
+      : assert(_accessToken != null);
 
   @override
   _FacebookImagePickerState createState() => _FacebookImagePickerState();
 }
 
-class _FacebookImagePickerState extends State<FacebookImagePicker>
-    with TickerProviderStateMixin {
+class _FacebookImagePickerState extends State<FacebookImagePicker> with TickerProviderStateMixin {
   GraphApi _client;
   Album _selectedAlbum;
   List<Album> _albums = [];
@@ -110,8 +115,7 @@ class _FacebookImagePickerState extends State<FacebookImagePicker>
     if (_photosNextLink == null) {
       return;
     }
-    PhotoPaging photos =
-        await _client.fetchPhotos(_selectedAlbum, _photosNextLink);
+    PhotoPaging photos = await _client.fetchPhotos(_selectedAlbum, _photosNextLink);
     setState(() {
       _photos.addAll(photos.data);
       _photosNextLink = photos.pagination.next;
@@ -191,6 +195,11 @@ class _FacebookImagePickerState extends State<FacebookImagePicker>
     int itemIndex = _selectedPhotos.indexOf(photo);
 
     if (itemIndex == -1) {
+      if (!widget.multiImageSelect) {
+        setState(() {
+          _selectedPhotos.clear();
+        });
+      }
       return setState(() {
         _selectedPhotos.add(photo);
       });
@@ -234,12 +243,7 @@ class _FacebookImagePickerState extends State<FacebookImagePicker>
         child: Stack(
           children: <Widget>[
             Positioned.fill(
-              child: PhotoGrid(
-                _photos,
-                _selectedPhotos,
-                onPhotoTap: _onPhotoTap,
-                onLoadMore: _paginatePhotos,
-              ),
+              child: PhotoGrid(_photos, _selectedPhotos, onPhotoTap: _onPhotoTap, onLoadMore: _paginatePhotos, selectedIcon: widget.selectedIcon),
             ),
             SlideTransition(
               position: _imageListPosition,
