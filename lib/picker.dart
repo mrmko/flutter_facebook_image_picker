@@ -153,7 +153,7 @@ class _FacebookImagePickerState extends State<FacebookImagePicker> with TickerPr
         child: Padding(
           padding: EdgeInsets.only(right: 5.00),
           child: Text(
-            '${widget.doneBtnText}(${_selectedPhotos.length})',
+            widget.multiImageSelect ? '${widget.doneBtnText}(${_selectedPhotos.length})' : '${widget.doneBtnText}',
             textScaleFactor: 1.3,
             style: widget.doneBtnTextStyle ??
                 TextStyle(
